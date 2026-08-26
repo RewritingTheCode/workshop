@@ -6,6 +6,7 @@
       "Bash(npm ci:*)",
       "Bash(npm test:*)",
       "Bash(npx netlify-cli:*)",
+      "Bash(npx --yes netlify-cli:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git add:*)",

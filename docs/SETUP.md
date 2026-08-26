@@ -82,7 +82,19 @@ NETLIFY_SITE_ID=paste_the_site_id_here
 
 Once both are there, `npm run deploy` runs with no questions asked.
 
-## 7. Have your resume handy
+## 7. Warm up the Netlify CLI
+
+Optional, and worth ninety seconds. The deploy step downloads the Netlify CLI the first time
+you run it. Doing that now, on your own wifi, means it is already cached on the day:
+
+```bash
+npx --yes netlify-cli --version
+```
+
+If sixty people download it at the same moment on conference wifi, some of them wait. If you
+run this once beforehand, you are not one of them.
+
+## 8. Have your resume handy
 
 A PDF or a plain text file. You will be putting your real information into the site during the
 session, and the fastest way is to let Claude Code read the file directly.

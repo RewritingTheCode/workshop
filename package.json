@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run test && npm run build",
-    "deploy": "netlify deploy --build --prod"
+    "deploy": "npx --yes netlify-cli deploy --build --prod"
   },
   "dependencies": {
     "react": "^19.2.8",
