@@ -51,7 +51,7 @@ claude --version
 ## 5. Clone this project
 
 ```bash
-git clone https://github.com/RewritingTheCode/Workshop.git my-portfolio
+git clone https://github.com/RewritingTheCode/workshop.git my-portfolio
 cd my-portfolio
 npm install
 npm run dev
