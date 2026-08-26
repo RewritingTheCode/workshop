@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="Placeholder image">
+  <!--
+    A deliberately abstract placeholder: soft, out-of-focus colour in the brand
+    palette, with a little film grain over the top. It is meant to read as
+    "a photograph belongs here", not as an avatar icon or a cartoon face.
+    Swap it for a real photo of yourself - drop the file in public/ and point
+    `avatar` in src/content/profile.ts at it.
+  -->
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbeee0" />
+      <stop offset="45%" stop-color="#d8b6f0" />
+      <stop offset="100%" stop-color="#3f1275" />
+    </linearGradient>
+    <filter id="blur60" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="46" />
+    </filter>
+    <filter id="blur24" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="20" />
+    </filter>
+    <filter id="film">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" seed="19" />
+      <feColorMatrix type="saturate" values="0" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.13" />
+      </feComponentTransfer>
+    </filter>
+    <clipPath id="frame">
+      <rect width="400" height="400" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="400" height="400" fill="url(#base)" />
+
+    <g filter="url(#blur60)">
+      <circle cx="96" cy="70" r="118" fill="#fff3e2" opacity="0.9" />
+      <circle cx="330" cy="132" r="132" fill="#b06ae8" opacity="0.85" />
+      <circle cx="196" cy="352" r="150" fill="#2c0a56" opacity="0.9" />
+      <circle cx="24" cy="286" r="104" fill="#7b2fd0" opacity="0.7" />
+    </g>
+
+    <g filter="url(#blur24)" opacity="0.55">
+      <circle cx="268" cy="252" r="42" fill="#ffe6c2" />
+      <circle cx="122" cy="176" r="26" fill="#ffffff" />
+    </g>
+
+    <rect width="400" height="400" filter="url(#film)" opacity="0.65" />
+  </g>
+</svg>

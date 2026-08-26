@@ -1,0 +1,85 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1251 >>
+stream
+BT
+/F2 22 Tf
+1 0 0 1 62 760 Tm
+(Jane Doe) Tj
+/F1 11 Tf
+1 0 0 1 62 730 Tm
+(Boston, MA  |  jane.doe@example.com  |  github.com/janedoe) Tj
+/F1 11 Tf
+1 0 0 1 62 704 Tm
+(This is a placeholder resume that ships with the RTC portfolio starter.) Tj
+/F1 11 Tf
+1 0 0 1 62 688 Tm
+(Replace it with your own PDF at public/resume-placeholder.pdf, or point) Tj
+/F1 11 Tf
+1 0 0 1 62 672 Tm
+(profile.resumeUrl at a different file.) Tj
+/F2 14 Tf
+1 0 0 1 62 646 Tm
+(Experience) Tj
+/F2 11 Tf
+1 0 0 1 62 622 Tm
+(Software Engineering Intern - Northlight Health) Tj
+/F1 11 Tf
+1 0 0 1 62 606 Tm
+(May 2026 - Present, Boston, MA) Tj
+/F2 11 Tf
+1 0 0 1 62 590 Tm
+(Undergraduate Research Assistant - Whitmore University HCI Lab) Tj
+/F1 11 Tf
+1 0 0 1 62 574 Tm
+(Sep 2025 - Apr 2026, Boston, MA) Tj
+/F2 11 Tf
+1 0 0 1 62 558 Tm
+(Front-End Developer - Riverside Public Library) Tj
+/F1 11 Tf
+1 0 0 1 62 542 Tm
+(Sep 2024 - May 2025, Cambridge, MA) Tj
+/F2 14 Tf
+1 0 0 1 62 516 Tm
+(Projects) Tj
+/F2 11 Tf
+1 0 0 1 62 492 Tm
+(Trailhead - offline-first trail finder \(React, TypeScript, PWA\)) Tj
+/F2 11 Tf
+1 0 0 1 62 476 Tm
+(Studyloop - spaced-repetition study tool \(React, IndexedDB\)) Tj
+/F2 11 Tf
+1 0 0 1 62 460 Tm
+(Bus Time Bot - transit delay bot \(Python, GTFS, Serverless\)) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000001553 00000 n 
+0000001650 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+1752
+%%EOF

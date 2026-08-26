@@ -1,0 +1,85 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  # The gate. This is the whole point: nothing below can start until lint,
+  # typecheck, tests and build have all passed.
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  # Secrets are not available to a job-level `if`, so we resolve them here and
+  # hand the answer down. Without this, every clone of this template that has
+  # not set up Netlify yet would show a red X on every push.
+  secrets-present:
+    name: Check Netlify secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          if [ -n "$NETLIFY_AUTH_TOKEN" ] && [ -n "$NETLIFY_SITE_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "### Netlify deploy skipped"
+              echo ""
+              echo "Add \`NETLIFY_AUTH_TOKEN\` and \`NETLIFY_SITE_ID\` under"
+              echo "Settings -> Secrets and variables -> Actions to deploy on every push."
+              echo ""
+              echo "Until then, deploy from your machine with \`npm run deploy\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  deploy:
+    name: Deploy to Netlify
+    needs: [ci, secrets-present]
+    if: needs.secrets-present.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: ${{ steps.netlify.outputs.url }}
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Netlify production
+        id: netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          npx --yes netlify-cli@latest deploy --dir=dist --prod --json > deploy.json
+          url="$(node -p "require('./deploy.json').deploy_ssl_url || require('./deploy.json').url")"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"

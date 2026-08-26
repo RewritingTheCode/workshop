@@ -1,0 +1,64 @@
+@import 'tailwindcss';
+
+/*
+ * Tailwind v4 keeps design tokens in CSS, not in a JS config file.
+ * Anything you declare here becomes a utility: --color-brand-500 gives you
+ * bg-brand-500, text-brand-500, border-brand-500, and so on.
+ *
+ * Change these six values and the whole site changes with them.
+ */
+@theme {
+  --color-ink-50: oklch(0.98 0.005 285);
+  --color-ink-100: oklch(0.95 0.008 285);
+  --color-ink-200: oklch(0.89 0.01 285);
+  --color-ink-400: oklch(0.65 0.02 285);
+  --color-ink-600: oklch(0.46 0.025 285);
+  --color-ink-800: oklch(0.28 0.03 285);
+  --color-ink-950: oklch(0.17 0.03 285);
+
+  --color-brand-100: oklch(0.93 0.05 305);
+  --color-brand-300: oklch(0.78 0.13 305);
+  --color-brand-500: oklch(0.58 0.21 305);
+  --color-brand-600: oklch(0.51 0.2 305);
+  --color-brand-700: oklch(0.43 0.17 305);
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --text-hero: clamp(2rem, 7vw, 3.5rem);
+}
+
+/*
+ * Base layer. Deliberately short - the point of this repo is that you can read
+ * all of its CSS in under a minute.
+ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Anchor targets should not hide under the sticky nav. */
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply bg-ink-50 text-ink-800 font-sans antialiased;
+  }
+
+  /* Visible focus on everything interactive, in one rule, for everyone. */
+  :focus-visible {
+    @apply outline-brand-600 rounded-sm outline-2 outline-offset-2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

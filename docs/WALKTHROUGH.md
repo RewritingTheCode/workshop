@@ -1,0 +1,184 @@
+# Walkthrough
+
+The whole workshop, written out, so you can do it again on your own.
+
+This is the loop RTC engineers use on the myRTC platform. It is five steps, and it does not
+change based on how big the change is:
+
+> **Context → Spec → Build → Validate → Ship**
+
+Everything below is one pass through it. Do the pass three times and it stops being a list you
+follow and starts being how you work.
+
+Before you start, finish [SETUP.md](SETUP.md). You need Node 20+, this repo cloned, and
+`npm run dev` showing Jane Doe's portfolio at <http://localhost:5173>.
+
+---
+
+## Step 1. Context - do not let it write code yet
+
+Open a terminal in the project and run `claude`. Then paste:
+
+```
+I want to build a personal portfolio site. Before we write any code, ask me
+what you need to know: who it is for, what someone should learn in the first
+30 seconds, and what the smallest useful version looks like. Do not propose an
+implementation yet.
+```
+
+Notice what you just did. **The first prompt of a project should not produce code. It should
+produce questions.** A model that starts building immediately is building for an imagined user,
+and the imagined user is never the real one.
+
+Answer its questions honestly and specifically. "For recruiters at mid-size tech companies who
+will spend ninety seconds on it" is a useful answer. "For everyone" is not.
+
+## Step 2. Spec - write the decision down before you build it
+
+An **ADR** - Architecture Decision Record - is a one-page note saying what you decided, what you
+rejected, and what you are accepting as a consequence. There are four in `docs/adr/` already.
+Read [ADR-002](adr/ADR-002-scope.md) before you write yours; it is the shortest useful example.
+
+```
+Read docs/adr/ADR-TEMPLATE.md and docs/adr/ADR-002-scope.md.
+
+Write docs/adr/ADR-005-<slug>.md for the decision we just talked through.
+Include: context, the decision, the options we rejected and why, and the
+consequences we are accepting. One page. Do not write any code.
+```
+
+Then **open the file and read the rejected-options section.** That section is the whole point.
+Anyone can write down what they decided. Writing down what you turned away, and why, is what
+stops you relitigating it in six months - and it is the part that tells you whether the model
+actually understood the problem or just agreed with you.
+
+If the rejected options are strawmen, the spec is not ready. Push back and regenerate.
+
+## Step 3. Build - the ADR is the instruction
+
+```
+Implement docs/adr/ADR-005-<slug>.md.
+
+Follow the existing patterns in src/components/. Content goes through
+src/content/schema.ts - do not add a second source of truth. Keep it responsive
+down to 320px. When you are done, run npm run check and fix anything red.
+```
+
+Two things are doing work in that prompt, and both are worth copying:
+
+- **"Follow the existing patterns"** keeps the new code looking like the old code. Without it
+  you get a second style in the same repo, and a repo with two styles is a repo nobody wants to
+  read.
+- **"Do not add a second source of truth"** is the constraint that keeps this codebase small.
+  All content lives in `src/content/profile.ts`. Every time something else tries to become a
+  source of content, say no.
+
+If it goes in the wrong direction, interrupt it. Do not let it finish being wrong:
+
+```
+Stop. That is not what the ADR says. Re-read docs/adr/ADR-005 and do only
+what is in it.
+```
+
+## Step 4. Your own content
+
+Drop your resume in the project root - PDF or plain text is fine - then:
+
+```
+Read ./my-resume.pdf and rewrite src/content/profile.ts with my real
+information. Follow src/content/schema.ts exactly. Keep the entry shapes and
+the tags. Do not invent anything that is not in the resume - if a field is not
+in there, leave it out. Then run npm test.
+```
+
+**The "do not invent anything" clause is not optional.** Without it you will get a
+plausible-sounding job you never had, on a public page with your name on it. Constrain the
+model hardest where the cost of being wrong is highest, and a fabricated internship on your
+portfolio is about as high as that cost gets for a student.
+
+`npm test` is what catches the other failure mode. If the model drops a date or mangles a
+`kind` field, `tests/content.test.ts` fails and names the exact field. That is the entire
+reason the content lives in one typed file with a schema over it.
+
+## Step 5. Validate - look at it, not just at the tests
+
+```bash
+npm run check
+```
+
+Four things, in order: lint, typecheck, tests, build. This is the same gate CI runs, which
+means green here is a real prediction about green there.
+
+Then do the two things a test suite cannot do for you:
+
+- **Look at it.** Open <http://localhost:5173> and read your own page as a stranger would.
+- **Squeeze the window as narrow as it goes.** `tests/responsive.test.tsx` catches fixed widths,
+  but only your eyes catch a headline that wraps badly at 320px.
+
+Tab through the page with the keyboard. You should always be able to see where you are. If you
+cannot, that is a bug, not a preference.
+
+## Step 6. Add a test for the thing you just changed
+
+```
+Add a test in tests/ that would fail if my timeline entries lost their dates
+or their kind field. Run npm test and show me the output.
+```
+
+The rule to keep: **every behaviour change gets a test that would fail without it.** Not a test
+that checks the markup rendered - a test that checks the behaviour happened.
+`tests/timeline.test.tsx` is the example. It does not assert that three buttons exist. It
+clicks one and asserts the work entries are gone.
+
+Never delete or weaken a failing test to get to green. The test is usually right.
+
+## Step 7. Ship - it is not done until it is on the internet
+
+Put your Netlify token in `.env` first, per [SETUP.md](SETUP.md) step 6. Then:
+
+```
+I have NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID in my .env. Build the site and
+deploy it to Netlify production. Show me the live URL when it is done.
+```
+
+Or do it yourself:
+
+```bash
+npm run deploy
+```
+
+The first run asks which site to use. Choose **Create & configure a new site**, pick your team,
+and give it a name. Afterwards, `npx netlify-cli status` prints the site id - put it in `.env`
+and you will never be asked again.
+
+Open the URL. That is your site, on the real internet, at an address you can put on a resume.
+
+---
+
+## Do it again
+
+That was one pass. Now pick something small - a skills grid, a "currently learning" callout, a
+print stylesheet - and do all five steps again for it. Context, spec, build, validate, ship.
+
+The third pass is where it stops feeling like ceremony. **That repetition is the entire skill.**
+
+---
+
+## When it breaks
+
+It will. That is normal, and it is the most useful thing that can happen while you are learning.
+
+| What happened | What to do |
+| --- | --- |
+| The model wrote code that does not work | Paste the error straight back: `This failed with: <error>. Fix it and rerun npm test.` |
+| It fixed it wrong, twice | Stop. Ask it to explain what is failing in plain language before it tries again. Two attempts, then change approach. |
+| It went off in its own direction | Interrupt. Point it back at the ADR by filename. |
+| Tests are red after a content import | Read the failure - it names the field. Usually a date in the wrong format. |
+| The deploy failed | Nine times out of ten it is the token. Check `.env` has no quotes and no trailing space, then run `npx netlify-cli status` on its own. |
+| You do not like how it looks | Say so, plainly: "the hero is too tall, make it about half that height." Faster than editing it yourself. |
+
+## What this repo will not do for you
+
+`docs/PRODUCTION-CHECKLIST.md` is the honest list of what a real production system needs and
+what this one has. Three of its rows say **not in this repo**. Read those three first - knowing
+what is missing is the part that makes you dangerous.
