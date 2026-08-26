@@ -57,6 +57,12 @@ Two different things, both worth naming:
 
 **Where:** [`netlify.toml`](../netlify.toml)
 
+Worth knowing that this one has teeth. The policy below blocks *any* script the page did not ask
+for - including one the host itself injects. Deploy this site with the Netlify badge left on and
+the browser console shows the policy refusing to run Netlify's own inline script. That is not a
+bug to work around by loosening the policy; it is the policy doing precisely the job it is there
+for.
+
 Four response headers, applied to every path:
 
 | Header | What it stops |

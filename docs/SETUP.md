@@ -107,7 +107,41 @@ automatically part of that environment. `npm run deploy` loads the file for you.
 `npx netlify-cli deploy` directly, with the token only in `.env`, fails with "Authentication
 required" even though the token is sitting right there.
 
-## 7. Warm up the Netlify CLI
+## 7. After your first deploy: check the URL is actually public
+
+Open your live URL **in a private/incognito window**, or on your phone. Not the normal window
+you are already logged into Netlify in.
+
+If you get a Netlify login screen instead of your site, your site is protected and only you can
+see it. New Netlify teams can default to "team members only", which is a sensible default for a
+company and exactly wrong for a portfolio. It is not broken and you have not done anything
+wrong - it is one setting.
+
+The fix, using the token you already have:
+
+```bash
+npx --yes netlify-cli api updateSite --data '{"site_id":"YOUR_SITE_ID","body":{"sso_login":false}}'
+```
+
+Your site id comes from `npx netlify-cli status`. Reload the incognito window and you should see
+your portfolio. In the Netlify UI the same setting lives under your site's access and security
+settings.
+
+**Check this before you tell anyone your URL.** A link that asks a recruiter to log in to
+Netlify is worse than no link.
+
+While you are there, turn off the Netlify badge:
+
+```bash
+npx --yes netlify-cli api updateSite --data '{"site_id":"YOUR_SITE_ID","body":{"built_with_badge_enabled":false,"hud_enabled":false}}'
+```
+
+Netlify injects a small script into every page to draw that badge, and the security policy this
+project ships in `netlify.toml` blocks it - correctly, since it is script the page did not ask
+for. Everything still works, but you get a red error in the browser console until you turn the
+badge off. Both settings need to be off; the badge is the one that does the injecting.
+
+## 8. Warm up the Netlify CLI
 
 Optional, and worth ninety seconds. The deploy step downloads the Netlify CLI the first time
 you run it. Doing that now, on your own wifi, means it is already cached on the day:
@@ -119,7 +153,7 @@ npx --yes netlify-cli --version
 If sixty people download it at the same moment on conference wifi, some of them wait. If you
 run this once beforehand, you are not one of them.
 
-## 8. Have your resume handy
+## 9. Have your resume handy
 
 A PDF or a plain text file. You will be putting your real information into the site during the
 session, and the fastest way is to let Claude Code read the file directly.
@@ -138,6 +172,8 @@ session, and the fastest way is to let Claude Code read the file directly.
 | `npm install` says your Node version is too old | It is. Install the current LTS from nodejs.org and run `npm install` again. |
 | Deploy says "Authentication required" but the token is in `.env` | Use `npm run deploy`, not the CLI directly - see step 6. If you already are, check `.env` has no quotes around the token and no trailing space. |
 | Nothing local will work at all | Use the Codespaces route in step 5. Do not spend the session fighting your laptop. |
+| Your live URL shows a Netlify login screen | The site is set to team-members-only. See step 7 - it is one command. |
+| A red console error about an inline script | The Netlify badge. Turn it off, also step 7. Your site is fine. |
 
 Still stuck? Reply to the workshop email. We would much rather sort it out now than at minute
 20 on the day.

@@ -157,6 +157,11 @@ The first run asks which site to use. Choose **Create & configure a new site**, 
 and give it a name. Afterwards, `npx netlify-cli status` prints the site id - put it in `.env`
 and you will never be asked again.
 
+Open the URL **in a private window**, not the one you are logged into Netlify in. If you see a
+Netlify login screen, your site is set to team-members-only - a Netlify default that is right for
+a company and wrong for a portfolio. [SETUP.md step 7](SETUP.md) fixes it with one command. Check
+this before you give the link to anybody.
+
 Open the URL. That is your site, on the real internet, at an address you can put on a resume.
 
 ---
