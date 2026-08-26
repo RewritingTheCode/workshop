@@ -8,9 +8,10 @@ build, and we would much rather you were building.
 
 ---
 
-## 1. Node.js, version 20 or newer
+## 1. Node.js
 
-Download it from [nodejs.org](https://nodejs.org). Take the LTS version.
+Download it from [nodejs.org](https://nodejs.org). Take the **LTS** version - whatever the big
+green button offers is right.
 
 Check it worked - open a terminal and run:
 
@@ -18,8 +19,13 @@ Check it worked - open a terminal and run:
 node -v
 ```
 
-You should see something starting with `v20` or higher. If you see `command not found`, the
-install did not finish; try again and restart your terminal afterwards.
+You need **20.19 or newer, or 22.12 or newer**. Current LTS is comfortably past both, so if you
+just installed it you are fine. The awkward case is an old Node still sitting on your machine
+from last year: `v20.5` looks close enough but is not, and the build tools will refuse it.
+
+If it is too old, `npm install` stops immediately and tells you so in plain English - it will
+not let you get halfway and then fail confusingly. If you see `command not found`, the install
+did not finish; try again and restart your terminal afterwards.
 
 ## 2. A GitHub account
 
@@ -63,6 +69,19 @@ Jane Doe. If you do, you are fully set up.
 > Using the green **Use this template** button on GitHub instead of cloning gives you your own
 > repo with a clean history, which is nicer if you plan to keep this. Either works.
 
+### If your laptop fights you: build it in the browser instead
+
+If Node will not install - a locked-down work laptop, no admin rights, an install that keeps
+failing - you do not need to fix it to take part. This repo ships a dev container, so GitHub
+can give you a ready-made machine in your browser with Node and Claude Code already on it.
+
+On the repo page: green **Code** button → **Codespaces** tab → **Create codespace on main**.
+Give it two or three minutes. Dependencies install themselves, and `npm run dev` will pop a
+"port 5173" notification - click **Open in Browser**.
+
+Everything else in this guide works exactly the same in there. It is a genuine fallback, not a
+lesser version, and it is much faster than debugging a local install at minute 20.
+
 ## 6. Your Netlify token, on the day
 
 Make a file called `.env` in the project root:
@@ -81,6 +100,12 @@ NETLIFY_SITE_ID=paste_the_site_id_here
 ```
 
 Once both are there, `npm run deploy` runs with no questions asked.
+
+Use `npm run deploy` rather than calling the Netlify CLI yourself. The CLI reads its token from
+the environment your terminal is running in, and a `.env` file is a file - it is not
+automatically part of that environment. `npm run deploy` loads the file for you. Calling
+`npx netlify-cli deploy` directly, with the token only in `.env`, fails with "Authentication
+required" even though the token is sitting right there.
 
 ## 7. Warm up the Netlify CLI
 
@@ -110,6 +135,9 @@ session, and the fastest way is to let Claude Code read the file directly.
 | `npm run dev` starts but the page is blank | Check the terminal for a red error. Paste it into Claude Code and ask it to fix it. |
 | Port 5173 is already in use | Something else is running. Vite will offer another port - take it. |
 | Netlify verification email has not arrived | Check spam. This is exactly why this step is pre-work. |
+| `npm install` says your Node version is too old | It is. Install the current LTS from nodejs.org and run `npm install` again. |
+| Deploy says "Authentication required" but the token is in `.env` | Use `npm run deploy`, not the CLI directly - see step 6. If you already are, check `.env` has no quotes around the token and no trailing space. |
+| Nothing local will work at all | Use the Codespaces route in step 5. Do not spend the session fighting your laptop. |
 
 Still stuck? Reply to the workshop email. We would much rather sort it out now than at minute
 20 on the day.

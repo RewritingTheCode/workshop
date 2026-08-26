@@ -147,6 +147,12 @@ Or do it yourself:
 npm run deploy
 ```
 
+Use that command rather than calling `npx netlify-cli` yourself. The CLI reads the token from
+the environment your terminal is running in, and a `.env` file is not automatically part of that
+environment - `npm run deploy` loads it for you. This is the single most common way this step
+fails: the token is correct, it is in the right file, and the CLI still says "Authentication
+required".
+
 The first run asks which site to use. Choose **Create & configure a new site**, pick your team,
 and give it a name. Afterwards, `npx netlify-cli status` prints the site id - put it in `.env`
 and you will never be asked again.
@@ -174,7 +180,8 @@ It will. That is normal, and it is the most useful thing that can happen while y
 | It fixed it wrong, twice | Stop. Ask it to explain what is failing in plain language before it tries again. Two attempts, then change approach. |
 | It went off in its own direction | Interrupt. Point it back at the ADR by filename. |
 | Tests are red after a content import | Read the failure - it names the field. Usually a date in the wrong format. |
-| The deploy failed | Nine times out of ten it is the token. Check `.env` has no quotes and no trailing space, then run `npx netlify-cli status` on its own. |
+| The deploy failed | Nine times out of ten it is the token. Check `.env` has no quotes and no trailing space, and make sure you ran `npm run deploy` rather than the CLI directly. |
+| "Authentication required" with a token in `.env` | You called the CLI directly. Use `npm run deploy`. |
 | You do not like how it looks | Say so, plainly: "the hero is too tall, make it about half that height." Faster than editing it yourself. |
 
 ## What this repo will not do for you

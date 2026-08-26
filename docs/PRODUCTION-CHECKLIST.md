@@ -129,6 +129,11 @@ What a real system would add:
 - Rotation on a schedule, and rotation on staff changes
 - An audit trail of who read what
 
+One thing this repo gets right that is easy to get wrong: the token is never exported by hand
+into a shell. `npm run deploy` reads `.env` for the length of that one command and nothing else.
+A credential typed into a terminal lives in your shell history, and in the scrollback of
+anything you were screen-sharing at the time.
+
 **Rotate the Netlify token you made for this workshop when you are done with it.** It is
 long-lived and broadly scoped, which was the right trade for a live demo and is the wrong one
 forever.

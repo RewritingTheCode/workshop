@@ -45,6 +45,13 @@ deploy. Do not delete or weaken a failing test to make it pass - fix the code.
 - Never add a dependency without saying what it is for and what it costs
 - Never add a backend, a database, or auth to this project. It is a static site on purpose.
 
+## Deploying
+
+Deploy only through `npm run deploy`. It loads `.env` into the environment first. Running the
+Netlify CLI directly will fail: the CLI reads the process environment, and a `.env` file is not
+the process environment. Never work around that by echoing a token into a terminal that is
+being screen-shared.
+
 ## Commands
 
     npm run dev        start the local server

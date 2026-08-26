@@ -14,10 +14,16 @@ dist-ssr/
 .env.*
 !.env.example
 
-# Attendee resumes dropped in the repo root during the workshop
-my-resume.pdf
-my-resume.txt
-my-resume.md
+# Resumes and other personal documents dropped in the repo root during the
+# workshop. Ignored by pattern, not by exact name: a real resume carries a phone
+# number and a home address, and this repo is going to be public. The placeholder
+# in public/ is unaffected.
+/*.pdf
+/*.doc
+/*.docx
+/*.txt
+/*.rtf
+my-resume.*
 
 # Editor / OS
 .DS_Store

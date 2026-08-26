@@ -33,6 +33,12 @@ We deploy to **Netlify**, and we pre-stage every part of it.
 - **`.env` holds the token locally and is gitignored.** `.env.example` is committed
   with the variable names and no values. `.claude/settings.json` puts `Read(./.env)` in
   the model's **deny** list, so Claude Code cannot read the token even if asked.
+- **`npm run deploy` loads `.env` into the environment before calling the CLI.** This is not a
+  detail. The Netlify CLI reads `NETLIFY_AUTH_TOKEN` from the *process environment*, and a
+  `.env` file is not the process environment - nothing loads it implicitly. With the token
+  sitting correctly in `.env`, calling the CLI directly still fails with "Authentication
+  required", which is a genuinely confusing error to hit in front of an audience. The deploy
+  script pipes the file through `dotenv-cli` so the one documented command always works.
 - **Account creation is pre-work**, not a live step. It goes in the email 48 hours
   ahead, so nobody is waiting on a verification email at minute 34.
 - **CI gates the deploy.** `.github/workflows/ci.yml` runs lint, typecheck, test and
@@ -66,6 +72,23 @@ would be impossible, and that block is load-bearing for the Part Three security 
 Pages also puts the site on a `github.io` subpath, which means base-path configuration in
 Vite - a footgun that produces a blank white page with no obvious cause, which is the
 worst possible failure mode at minute 36.
+
+### Option: telling people to `export NETLIFY_AUTH_TOKEN=...` in their terminal
+
+The zero-dependency way to get the token into the environment, and what Netlify's own docs show.
+
+Rejected for two reasons. It does not survive a new terminal tab, so an attendee who reopens
+their editor at minute 50 silently loses their token and gets an error that looks like a Netlify
+problem. And it puts a live credential in shell history and in the scrollback of a screen share.
+A gitignored file that one command reads is both more durable and safer to demonstrate.
+
+### Option: making `netlify-cli` a direct dependency instead of running it through `npx`
+
+Would make the deploy instant on the day, with no download.
+
+Rejected on install weight. The CLI pulls in a very large dependency tree, and `npm install` at
+minute 0 is on conference wifi for sixty people at once. `npx` keeps the starter install small;
+the pre-work asks people to run the CLI once beforehand so the download is already cached.
 
 ### Option: `netlify login` and the browser OAuth flow
 
@@ -109,6 +132,8 @@ a gate looks like in a repo small enough to read in full.
   read access to `.env` - a one-second, visible demonstration of secrets hygiene.
 - **Good:** The security headers and the CI gate are real artifacts, so every Part Three
   claim can be backed by opening a file.
+- **Bad:** One more dependency - `dotenv-cli`, eleven packages - purely to make one command
+  work reliably. Worth it: the alternative is an error message that costs live minutes.
 - **Bad:** A personal access token is long-lived and broadly scoped. It is the right
   trade-off for a workshop and the wrong one for a production pipeline; the honest version
   in `docs/PRODUCTION-CHECKLIST.md` says to rotate it afterwards.
