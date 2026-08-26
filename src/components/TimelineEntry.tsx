@@ -1,5 +1,7 @@
 import { ArrowUpRight, Briefcase, CalendarDays, FolderGit2, MapPin } from 'lucide-react';
 import type { TimelineEntry as Entry } from '../content/schema';
+import { EntryCover } from './EntryCover';
+import { iconForTag } from './icon-map';
 
 const MONTHS = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -29,18 +31,19 @@ export function TimelineEntry({ entry }: TimelineEntryProps) {
       data-kind={entry.kind}
       className="border-ink-200 relative scroll-mt-24 border-l pb-10 pl-6 last:border-transparent last:pb-0 sm:pl-8"
     >
-      {/* The marker on the rail. Filled for something still going. */}
+      {/* The marker on the rail: the kind, as a badge. Filled while it is still going. */}
       <span
         aria-hidden="true"
         className={
           isCurrent
-            ? 'bg-brand-500 ring-ink-50 absolute top-1.5 -left-[5px] h-2.5 w-2.5 rounded-full ring-4'
-            : 'bg-ink-200 ring-ink-50 absolute top-1.5 -left-[5px] h-2.5 w-2.5 rounded-full ring-4'
+            ? 'bg-brand-600 ring-ink-50 absolute top-0 -left-[13px] grid h-6 w-6 place-items-center rounded-full text-white ring-4'
+            : 'bg-ink-100 text-ink-400 ring-ink-50 border-ink-200 absolute top-0 -left-[13px] grid h-6 w-6 place-items-center rounded-full border ring-4'
         }
-      />
+      >
+        <KindIcon className="h-3 w-3" strokeWidth={2.25} />
+      </span>
 
-      <p className="text-ink-400 flex items-center gap-1.5 text-[0.6875rem] font-semibold tracking-[0.14em] uppercase">
-        <KindIcon aria-hidden="true" className="h-3.5 w-3.5" strokeWidth={2.25} />
+      <p className="text-ink-400 text-[0.6875rem] font-semibold tracking-[0.14em] uppercase">
         {isWork ? 'Work' : 'Project'}
       </p>
 
@@ -70,24 +73,7 @@ export function TimelineEntry({ entry }: TimelineEntryProps) {
         column of large banners you have to scroll past.
       */}
       <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
-        {entry.image ? (
-          <figure className="sm:order-last sm:w-56 sm:shrink-0">
-            <img
-              src={entry.image.src}
-              alt={entry.image.alt}
-              width={960}
-              height={640}
-              loading="lazy"
-              decoding="async"
-              className="border-ink-200 aspect-[3/2] w-full rounded-xl border object-cover"
-            />
-            {entry.image.credit ? (
-              <figcaption className="text-ink-400 mt-1.5 text-[0.6875rem] leading-snug">
-                {entry.image.credit}
-              </figcaption>
-            ) : null}
-          </figure>
-        ) : null}
+        <EntryCover entry={entry} />
 
         <div className="min-w-0 flex-1">
           <p className="text-ink-800 leading-relaxed text-pretty">{entry.summary}</p>
@@ -106,14 +92,17 @@ export function TimelineEntry({ entry }: TimelineEntryProps) {
 
       {entry.tags.length > 0 ? (
         <ul aria-label="Tags" className="mt-4 flex flex-wrap gap-1.5">
-          {entry.tags.map((tag) => (
-            <li
-              key={tag}
-              className="border-ink-200 text-ink-600 rounded-full border bg-white px-2.5 py-0.5 text-xs font-medium"
-            >
-              {tag}
-            </li>
-          ))}
+          {entry.tags.map((tag) => {
+            const TagIcon = iconForTag(tag);
+            return (
+              <li key={tag}>
+                <span className="border-ink-200 text-ink-600 inline-flex items-center gap-1.5 rounded-full border bg-white px-2.5 py-1 text-xs font-medium">
+                  <TagIcon aria-hidden="true" className="text-brand-500 h-3 w-3" />
+                  {tag}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       ) : null}
 

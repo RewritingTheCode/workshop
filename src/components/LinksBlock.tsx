@@ -1,4 +1,4 @@
-import { Code2, Download, Globe, Mail, Users } from 'lucide-react';
+import { Code2, Download, Globe, Mail, Send, Users } from 'lucide-react';
 import type { Link } from '../content/schema';
 
 /**
@@ -24,7 +24,12 @@ export function LinksBlock({ links, resumeUrl }: LinksBlockProps) {
   return (
     <section id="links" className="scroll-mt-24 px-4 pt-2 pb-12 sm:px-6 sm:pb-16">
       <div className="border-ink-200 from-brand-100/60 mx-auto max-w-3xl rounded-2xl border bg-gradient-to-br to-white p-6 sm:p-9">
-        <h2 className="text-ink-950 text-2xl font-bold tracking-tight sm:text-3xl">Get in touch</h2>
+        <h2 className="text-ink-950 flex items-center gap-2.5 text-2xl font-bold tracking-tight sm:text-3xl">
+          <span className="bg-brand-600 grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white">
+            <Send aria-hidden="true" className="h-4.5 w-4.5" />
+          </span>
+          Get in touch
+        </h2>
 
         <ul className="mt-5 flex flex-wrap gap-2">
           {links.map((link) => {

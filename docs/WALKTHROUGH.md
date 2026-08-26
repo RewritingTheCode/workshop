@@ -96,7 +96,8 @@ plausible-sounding job you never had, on a public page with your name on it. Con
 model hardest where the cost of being wrong is highest, and a fabricated internship on your
 portfolio is about as high as that cost gets for a student.
 
-Want images on your projects? Drop them in `public/images/` and point at them from the entry:
+Every entry gets a generated cover - a colour and an icon derived from its tags. To use a real
+screenshot instead, make a `public/images/` folder, put the file in it, and point at it:
 
 ```ts
 image: {
@@ -105,8 +106,9 @@ image: {
 },
 ```
 
-A screenshot of the thing you built beats a stock photo every time. The schema requires `alt`
-whenever there is an image, so `npm test` will tell you if you forget it.
+A screenshot of the thing you built beats any stock photo, which is why nothing here ships with
+one. The schema requires `alt` whenever there is an image, so `npm test` will tell you if you
+forget it.
 
 `npm test` is what catches the other failure mode. If the model drops a date or mangles a
 `kind` field, `tests/content.test.ts` fails and names the exact field. That is the entire

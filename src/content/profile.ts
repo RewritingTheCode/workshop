@@ -99,11 +99,6 @@ export const profile: Profile = {
       endDate: null,
       summary:
         'A trail finder for people without signal. It caches maps and trail notes on your phone before you leave the parking lot.',
-      image: {
-        src: '/images/project-trailhead.jpg',
-        alt: 'A gravel footpath leading into a stand of evergreens on a clear day.',
-        credit: 'Paul Jarvis / Unsplash',
-      },
       highlights: [
         'Offline-first with a service worker and IndexedDB; the whole app works in airplane mode.',
         'Around 400 people used it during the spring hiking season without me telling anyone about it.',
@@ -120,11 +115,6 @@ export const profile: Profile = {
       endDate: '2025-09',
       summary:
         'A spaced-repetition study tool built for a friend who kept forgetting organic chemistry mechanisms the week after the exam.',
-      image: {
-        src: '/images/project-studyloop.jpg',
-        alt: 'An open hardback book lying flat on a wooden desk.',
-        credit: 'Alejandro Escamilla / Unsplash',
-      },
       highlights: [
         'Implemented the SM-2 scheduling algorithm from the paper rather than pulling in a library.',
         'Keyboard-only review mode, because reaching for the mouse every four seconds ruins the flow.',
@@ -141,11 +131,6 @@ export const profile: Profile = {
       endDate: '2025-02',
       summary:
         'A small bot that posts real delays for the two bus routes my dorm depends on, because the official app rounds everything to "5 min".',
-      image: {
-        src: '/images/project-bus-time-bot.jpg',
-        alt: 'An empty transit platform at night, lit by lamps in heavy fog.',
-        credit: 'Robin Röcker / Unsplash',
-      },
       highlights: [
         'Polls the transit agency GTFS-realtime feed and posts to a group chat when a bus is more than six minutes late.',
         'Runs on a free scheduled function; costs nothing to keep alive.',

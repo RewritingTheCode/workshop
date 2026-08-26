@@ -63,10 +63,16 @@ naming the entry, not a silent gap that only a screen reader user ever discovers
 matching test asserting the file actually exists in `public/`, because a broken image path
 typechecks perfectly.
 
-Placeholder project images ship in `public/images/` with credits in
-`public/images/CREDITS.md`. They are local files rather than remote URLs on purpose: sixty people
-loading a page over conference wifi should not be waiting on someone else's CDN, and the site has
-to work with no network at all when someone runs it on a train.
+**Nothing ships with a photograph.** Entries without an image get a cover drawn from their own
+data: a stable hue derived from the entry id, and an icon chosen from the entry's most specific
+tag - so a project tagged Leaflet gets a map and one tagged GTFS gets a bus. Nobody has to pick a
+colour, no two entries look alike, and there is no image to load.
+
+That is a deliberate trade. Stock photography on a portfolio is decoration: it tells a reader
+nothing about the work, it is another thing to license and attribute, and it is bytes to download
+over conference wifi. A generated cover is honest about being a placeholder while still giving
+the page visual rhythm. When an attendee adds a real screenshot of something they built, that
+wins - the image field takes precedence over the generated cover.
 
 ## Options we rejected
 
