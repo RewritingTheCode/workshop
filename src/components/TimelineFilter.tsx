@@ -1,14 +1,16 @@
+import { Briefcase, FolderGit2, LayoutList } from 'lucide-react';
 import type { TimelineFilterValue } from '../content/schema';
 
 type Option = {
   value: TimelineFilterValue;
   label: string;
+  Icon: typeof LayoutList;
 };
 
 const OPTIONS: Option[] = [
-  { value: 'all', label: 'All' },
-  { value: 'work', label: 'Work' },
-  { value: 'project', label: 'Projects' },
+  { value: 'all', label: 'All', Icon: LayoutList },
+  { value: 'work', label: 'Work', Icon: Briefcase },
+  { value: 'project', label: 'Projects', Icon: FolderGit2 },
 ];
 
 type TimelineFilterProps = {
@@ -30,6 +32,7 @@ export function TimelineFilter({ value, onChange }: TimelineFilterProps) {
     >
       {OPTIONS.map((option) => {
         const isActive = option.value === value;
+        const { Icon } = option;
         return (
           <button
             key={option.value}
@@ -38,10 +41,11 @@ export function TimelineFilter({ value, onChange }: TimelineFilterProps) {
             onClick={() => onChange(option.value)}
             className={
               isActive
-                ? 'bg-brand-600 rounded-md px-3 py-1.5 text-sm font-medium text-white'
-                : 'text-ink-600 hover:bg-ink-100 rounded-md px-3 py-1.5 text-sm font-medium transition-colors'
+                ? 'bg-brand-600 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white'
+                : 'text-ink-600 hover:bg-ink-100 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors'
             }
           >
+            <Icon aria-hidden="true" className="h-3.5 w-3.5" />
             {option.label}
           </button>
         );

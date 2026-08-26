@@ -96,6 +96,18 @@ plausible-sounding job you never had, on a public page with your name on it. Con
 model hardest where the cost of being wrong is highest, and a fabricated internship on your
 portfolio is about as high as that cost gets for a student.
 
+Want images on your projects? Drop them in `public/images/` and point at them from the entry:
+
+```ts
+image: {
+  src: '/images/my-project.png',
+  alt: 'The dashboard, showing this week of data.',
+},
+```
+
+A screenshot of the thing you built beats a stock photo every time. The schema requires `alt`
+whenever there is an image, so `npm test` will tell you if you forget it.
+
 `npm test` is what catches the other failure mode. If the model drops a date or mangles a
 `kind` field, `tests/content.test.ts` fails and names the exact field. That is the entire
 reason the content lives in one typed file with a schema over it.

@@ -52,6 +52,22 @@ The `Timeline` component **sorts by date** - `endDate` descending, `null` (prese
 first, ties broken on `startDate` descending. It never relies on array order, because
 the model rewrites that array wholesale and nothing preserves ordering.
 
+### Images are part of the contract, and `alt` is not optional
+
+Timeline entries can carry an image. The field is optional - most work entries do not need one -
+but when it is present, `alt` is **required** by the schema, not merely encouraged.
+
+That is deliberate. "Remember to add alt text" is a rule people mean to follow and then do not,
+especially at 1am adding a screenshot. Putting it in the schema means the failure is a red test
+naming the entry, not a silent gap that only a screen reader user ever discovers. There is a
+matching test asserting the file actually exists in `public/`, because a broken image path
+typechecks perfectly.
+
+Placeholder project images ship in `public/images/` with credits in
+`public/images/CREDITS.md`. They are local files rather than remote URLs on purpose: sixty people
+loading a page over conference wifi should not be waiting on someone else's CDN, and the site has
+to work with no network at all when someone runs it on a train.
+
 ## Options we rejected
 
 ### Option: Plain TypeScript types, no Zod

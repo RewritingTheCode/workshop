@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { profile } from '../src/content/profile';
 import { profileSchema } from '../src/content/schema';
@@ -33,6 +35,28 @@ describe('profile content', () => {
   it('gives every entry a unique id, because ids are React keys and anchors', () => {
     const ids = profile.timeline.map((entry) => entry.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('gives every image real alt text', () => {
+    for (const entry of profile.timeline) {
+      if (!entry.image) continue;
+      expect(entry.image.alt.trim().length, `${entry.id} has an image with empty alt text`).
+        toBeGreaterThan(0);
+      expect(
+        entry.image.src.startsWith('/'),
+        `${entry.id} image src should be a root-relative path, got "${entry.image.src}"`,
+      ).toBe(true);
+    }
+  });
+
+  it('points every image at a file that actually exists', () => {
+    for (const entry of profile.timeline) {
+      if (!entry.image) continue;
+      const onDisk = join(process.cwd(), 'public', entry.image.src);
+      expect(existsSync(onDisk), `${entry.id} points at ${entry.image.src}, which is not in public/`).toBe(
+        true,
+      );
+    }
   });
 
   it('never ends an entry before it starts', () => {

@@ -15,6 +15,18 @@ export const linkSchema = z.object({
   href: z.url(),
 });
 
+/**
+ * An image belonging to an entry. `alt` is required, not optional - if there is
+ * an image there has to be a description of it, and the schema is the right
+ * place to enforce that rather than hoping someone remembers.
+ */
+export const imageSchema = z.object({
+  src: z.string().min(1),
+  alt: z.string().min(1),
+  /** Photographer and source, when the image is not yours. */
+  credit: z.string().optional(),
+});
+
 export const timelineEntrySchema = z.object({
   /** Stable, unique, kebab-case. Used as the React key and the anchor id. */
   id: z.string().min(1),
@@ -30,6 +42,8 @@ export const timelineEntrySchema = z.object({
   location: z.string().optional(),
   /** One or two sentences. */
   summary: z.string().min(1),
+  /** A screenshot, photo or cover image. Optional - plenty of entries need none. */
+  image: imageSchema.optional(),
   highlights: z.array(z.string()).default([]),
   /** "React", "Python" */
   tags: z.array(z.string()).default([]),
@@ -50,6 +64,7 @@ export const profileSchema = z.object({
 });
 
 export type Link = z.infer<typeof linkSchema>;
+export type Image = z.infer<typeof imageSchema>;
 export type Profile = z.infer<typeof profileSchema>;
 export type TimelineEntry = z.infer<typeof timelineEntrySchema>;
 
