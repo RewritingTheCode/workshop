@@ -19,7 +19,8 @@ Check it worked - open a terminal and run:
 node -v
 ```
 
-You need **20.19 or newer, or 22.12 or newer**. Current LTS is comfortably past both, so if you
+You need **Node 24 (the current LTS), or 22.13 or newer**. Node 20 reached end of life in April
+2026 and no longer gets security updates, so this project does not build on it. If you
 just installed it you are fine. The awkward case is an old Node still sitting on your machine
 from last year: `v20.5` looks close enough but is not, and the build tools will refuse it.
 

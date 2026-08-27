@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "24"
 
 # Security headers. See docs/adr/ADR-007-security-posture.md, and
 # tests/security.test.ts, which fails if any of the directives below go missing.

@@ -1,6 +1,6 @@
 {
   "name": "Portfolio Starter",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
 
   "features": {
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}

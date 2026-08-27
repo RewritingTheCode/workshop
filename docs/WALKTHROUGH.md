@@ -10,7 +10,7 @@ change based on how big the change is:
 Everything below is one pass through it. Do the pass three times and it stops being a list you
 follow and starts being how you work.
 
-Before you start, finish [SETUP.md](SETUP.md). You need Node 20+, this repo cloned, and
+Before you start, finish [SETUP.md](SETUP.md). You need Node 24 (or 22.13+), this repo cloned, and
 `npm run dev` showing Jane Doe's portfolio at <http://localhost:5173>.
 
 ---

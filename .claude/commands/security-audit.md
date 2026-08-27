@@ -73,7 +73,25 @@ nice-to-have and should be labelled as such.
   rot the day it is handed over?
 - Are lockfile installs enforced (`npm ci`, not `npm install`) everywhere it matters?
 
-### 3. Content as untrusted input
+### 3. Runtimes, images and platforms
+
+The pass that gets skipped, because none of this is a dependency and none of it appears in
+`npm audit`. Everything here is a thing that runs your code and stops getting security patches
+on a date somebody else chose.
+
+- **What Node version is pinned, and is it still supported?** Check `.nvmrc`, `engines`, the
+  CI workflow, the deploy platform's config and the devcontainer base image - they drift apart.
+  Then check the date against `nodejs/Release`, by fetching it, not from memory. An end-of-life
+  runtime is a finding even when nothing is currently exploitable against it: it means the next
+  vulnerability is never fixed for you.
+- **Same question for every other image**: the CI runner, the build image, the devcontainer.
+- **Is the version written down once, or copied into five files?** Copies drift, and the copy
+  that drifts is the one nobody reads.
+- If a dependency update fails on an `engines` conflict, **ask which side is wrong** before
+  pinning around it. An ecosystem dropping your runtime is usually the ecosystem telling you
+  something.
+
+### 4. Content as untrusted input
 - Read the content schema. For every field that reaches the DOM as a URL, an `src`, or an
   attribute: **what does the validator actually accept?** Write a scratch script and feed it
   `javascript:`, `JaVaScRiPt:`, `data:text/html;base64,...`, `vbscript:`, `file:///`,
@@ -86,7 +104,7 @@ nice-to-have and should be labelled as such.
   test proving it?
 - Any `target="_blank"` without `rel="noopener"`?
 
-### 4. Response headers
+### 5. Response headers
 Read the headers config, then evaluate the CSP directive by directive. For each of
 `default-src`, `script-src`, `style-src`, `img-src`, `connect-src`, `font-src`,
 `object-src`, `base-uri`, `frame-ancestors`, `form-action`: is it present, does it fall back
@@ -99,7 +117,7 @@ actually tolerate?
 - If the site is live, `curl -sI` it and diff what is actually served against the config.
   Headers that exist in a file but not on the wire are worth nothing.
 
-### 5. What ships to the public
+### 6. What ships to the public
 - `git ls-files` and the contents of the publish directory: is anything in there that a
   stranger should not have? Personal documents, internal notes, presenter material, an
   unredacted resume.

@@ -15,6 +15,22 @@ updates:
         dependency-type: development
         update-types: [minor, patch]
 
+    # Held, with the condition for releasing each one. An ignore with no stated
+    # exit is just a thing nobody will ever dare remove.
+    # See docs/adr/ADR-008-node-runtime-support.md.
+    ignore:
+      # jsdom 30 requires Node ^22.22.2 || ^24.15.0, tighter than this project's
+      # floor of ^22.13.0 || >=24.0.0. Not a security update. Unhold when the
+      # Node floor next moves.
+      - dependency-name: jsdom
+        update-types: [version-update:semver-major]
+      # TypeScript 7 is out, but typescript-eslint still declares
+      # `typescript: >=4.8.4 <6.1.0` with no newer release. There is no
+      # resolution, which is why Dependabot's own run errored rather than
+      # opening a PR. Unhold when typescript-eslint supports TS 7.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+
   - package-ecosystem: github-actions
     directory: /
     schedule:

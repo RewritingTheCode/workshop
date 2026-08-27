@@ -29,6 +29,9 @@ have on a normal product:
 We build with **React 19 + TypeScript**, bundled by **Vite**, styled with **Tailwind
 CSS v4**, tested with **Vitest + Testing Library + jest-axe**, linted by **ESLint 9
 flat config**, on **Node 20 or newer**. Content is validated by a **Zod** schema.
+
+> **Node floor superseded by [ADR-008](ADR-008-node-runtime-support.md).** Node 20 reached
+> end of life on 2026-04-30; the build targets Node 24. The rest of this decision stands.
 Output is a static `dist/` folder, deployed to **Netlify** (see ADR-004).
 
 React and TypeScript are what the myRTC platform is written in, so slide 17 is

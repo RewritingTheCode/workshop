@@ -145,8 +145,14 @@ reader.
 **Where:** [`package-lock.json`](../package-lock.json), [`.nvmrc`](../.nvmrc)
 
 The lockfile is committed and CI uses `npm ci`, not `npm install`, so every build resolves the
-exact same tree. `.nvmrc` pins Node 20, and both the CI workflow and `netlify.toml` read from
+exact same tree. `.nvmrc` pins Node 24, and both the CI workflow and `netlify.toml` read from
 it rather than hardcoding a version in three places.
+
+The version itself is a security decision, which is easy to miss because a runtime is not a
+dependency and `npm audit` never mentions it. Node 20 went end of life in April 2026, and this
+repo was still pinned to it until [ADR-008](adr/ADR-008-node-runtime-support.md) - building on
+a runtime that no longer receives security releases. Worth asking of every project you own:
+**what runs this, and when does it stop getting patched?**
 
 ---
 
