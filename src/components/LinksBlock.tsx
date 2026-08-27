@@ -22,7 +22,11 @@ export function LinksBlock({ links, resumeUrl }: LinksBlockProps) {
   if (!hasAnything) return null;
 
   return (
-    <section id="links" className="scroll-mt-24 px-4 pt-2 pb-12 sm:px-6 sm:pb-16">
+    // Same vertical rhythm as every other orderable section. It used to be
+    // `pt-2`, tuned for sitting directly under the timeline - which quietly
+    // made the spacing depend on the order, and `profile.sections` can change
+    // that. See ADR-006.
+    <section id="links" className="scroll-mt-24 px-4 py-10 sm:px-6 sm:py-14">
       <div className="border-ink-200 from-brand-100/60 mx-auto max-w-3xl rounded-2xl border bg-gradient-to-br to-white p-6 sm:p-9">
         <h2 className="text-ink-950 flex items-center gap-2.5 text-2xl font-bold tracking-tight sm:text-3xl">
           <span className="bg-brand-600 grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white">

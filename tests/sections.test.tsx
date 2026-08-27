@@ -1,7 +1,8 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { Page } from '../src/components/Page';
-import type { Profile, SectionId } from '../src/content/schema';
+import { SECTIONS } from '../src/components/sections';
+import { SECTION_IDS, type Profile, type SectionId } from '../src/content/schema';
 
 /**
  * Section order is content, not layout - see ADR-006.
@@ -87,6 +88,32 @@ describe('page sections', () => {
         `the nav links to #${target}, which is not on the page`,
       ).not.toBeNull();
     }
+  });
+
+  /*
+   * Sections are interchangeable, so none of them may carry spacing that only
+   * looks right in one position. `LinksBlock` used to open with `pt-2`, tuned
+   * for sitting directly under the timeline; put it first and it jammed against
+   * the hero. That is invisible to every other test here, because DOM order was
+   * right and only the rhythm was wrong.
+   */
+  it('gives every orderable section the same vertical rhythm, so order cannot change spacing', () => {
+    const rhythms = SECTION_IDS.map((id) => {
+      const { container, unmount } = render(
+        <div>{SECTIONS[id].render(profileWith([...SECTION_IDS]))}</div>,
+      );
+      const section = container.querySelector('section');
+      const vertical = section!.className
+        .split(/\s+/)
+        .filter((token) => /^(sm:|md:)?p[tby]-/.test(token))
+        .sort()
+        .join(' ');
+      unmount();
+      return `${id}: ${vertical}`;
+    });
+
+    const distinct = new Set(rhythms.map((entry) => entry.split(': ')[1]));
+    expect(distinct.size, `sections disagree on vertical padding:\n${rhythms.join('\n')}`).toBe(1);
   });
 
   it('still renders the hero when there are no sections at all', () => {
