@@ -54,10 +54,20 @@ Install it from [claude.ai/code](https://claude.ai/code), then confirm:
 claude --version
 ```
 
-## 5. Clone this project
+## 5. Get your own copy of this project
+
+On the repo page, click the green **Use this template** button, then **Create a new repository**.
+Call it `my-portfolio` and make it public. You now own the code outright, with a history that
+starts with you.
+
+Do it this way rather than forking. This is going on your resume, and a fork carries a permanent
+"forked from RewritingTheCode/workshop" label at the top of the page - which makes your work look
+like somebody else's project that you copied.
+
+Now clone the repo you just made. Swap in your own GitHub username:
 
 ```bash
-git clone https://github.com/RewritingTheCode/workshop.git my-portfolio
+git clone https://github.com/YOUR-USERNAME/my-portfolio.git
 cd my-portfolio
 npm install
 npm run dev
@@ -66,8 +76,9 @@ npm run dev
 Open <http://localhost:5173>. You should see a finished portfolio for a fictional person named
 Jane Doe. If you do, you are fully set up.
 
-> Using the green **Use this template** button on GitHub instead of cloning gives you your own
-> repo with a clean history, which is nicer if you plan to keep this. Either works.
+> Only here to look around, and not planning to keep it? Clone this repo directly with
+> `git clone https://github.com/RewritingTheCode/workshop.git my-portfolio`. Everything in the
+> workshop works exactly the same - you just will not have anywhere to push your own changes.
 
 ### If your laptop fights you: build it in the browser instead
 
@@ -75,7 +86,8 @@ If Node will not install - a locked-down work laptop, no admin rights, an instal
 failing - you do not need to fix it to take part. This repo ships a dev container, so GitHub
 can give you a ready-made machine in your browser with Node and Claude Code already on it.
 
-On the repo page: green **Code** button → **Codespaces** tab → **Create codespace on main**.
+Make your own copy with **Use this template** as above, then skip the `git clone` entirely.
+On **your** repo's page: green **Code** button → **Codespaces** tab → **Create codespace on main**.
 Give it two or three minutes. Dependencies install themselves, and `npm run dev` will pop a
 "port 5173" notification - click **Open in Browser**.
 
