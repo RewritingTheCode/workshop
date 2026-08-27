@@ -15,7 +15,7 @@ admission that it is not here.
 
 **Where:** [`docs/adr/`](adr/)
 
-Six Architecture Decision Records, each written before the code it describes, each with a real
+Seven Architecture Decision Records, each written before the code it describes, each with a real
 rejected-options section. The rejected options are the valuable part: they are the answer to
 "why didn't you just use X?" from a version of you that still remembered.
 
@@ -57,20 +57,35 @@ gate stops being a thing you take our word for.
 
 ### Security, inside-out
 
-**Where:** the `npm audit --audit-level=high` step in
-[`ci.yml`](../.github/workflows/ci.yml); the `deny` block in
-[`.claude/settings.json`](../.claude/settings.json)
+**Where:** [`ci.yml`](../.github/workflows/ci.yml),
+[`dependabot.yml`](../.github/dependabot.yml), [`codeql.yml`](../.github/workflows/codeql.yml);
+the `deny` block in [`.claude/settings.json`](../.claude/settings.json)
 
-Two different things, both worth naming:
+Four different things, all worth naming:
 
 - **Your dependencies are your attack surface.** `npm audit` fails the build on a known
-  high-severity advisory in anything you depend on, including things you did not choose and
+  moderate-or-worse advisory in anything you depend on, including things you did not choose and
   have never heard of. When it goes red, the fix is to update the dependency - that is the
-  lesson, not an inconvenience.
+  lesson, not an inconvenience. `dependency-review-action` catches the same thing one step
+  earlier, in the PR that introduces it.
+- **Installing a dependency runs its code.** An npm `postinstall` script executes on your
+  machine and in CI, before a single test runs, which is how most supply chain attacks actually
+  land. CI installs with `npm ci --ignore-scripts`. Worth checking your own tree before you copy
+  that: `node -e "const l=require('./package-lock.json');console.log(Object.entries(l.packages).filter(([,v])=>v.hasInstallScript).map(([k])=>k))"`.
+- **A version tag is not a version.** Every third-party GitHub Action here is pinned to a commit
+  SHA with the version in a trailing comment, because `@v5` is a pointer its owner can repoint
+  at any time - and the deploy job it runs in is holding your Netlify token. Dependabot updates
+  the hash and the comment together, weekly, along with the npm dependencies. Pinning without
+  something to move the pins just gets you reliably old.
 - **Your tooling is your attack surface too.** `.claude/settings.json` puts `Read(./.env)` in
   the model's deny list, so Claude Code cannot read your Netlify token even if you ask it to.
   `Bash(git push:*)` is denied for the same reason: pushing should be a deliberate act, not
   something that happens while you are talking.
+
+And one thing that runs whether or not anyone is paying attention: CodeQL analyses the source on
+every push, every PR, and once a week on a schedule. The schedule is the point - a fork that
+nobody has opened since the workshop still gets checked against rules written after it was
+handed over.
 
 ### Security, outside-in
 
@@ -82,17 +97,35 @@ the browser console shows the policy refusing to run Netlify's own inline script
 bug to work around by loosening the policy; it is the policy doing precisely the job it is there
 for.
 
-Four response headers, applied to every path:
+Response headers, applied to every path:
 
 | Header | What it stops |
 | --- | --- |
 | `Content-Security-Policy` | A script from somewhere else running on your page |
+| `Strict-Transport-Security` | A downgrade to plain HTTP on a hostile network |
 | `X-Frame-Options: DENY` | Someone framing your site to trick people into clicking things |
 | `X-Content-Type-Options: nosniff` | A browser guessing that your text file is really JavaScript |
 | `Referrer-Policy: strict-origin-when-cross-origin` | Leaking your full URLs to every site you link to |
+| `Permissions-Policy` | A page on your origin quietly asking for the camera or location |
+| `Cross-Origin-Opener-Policy` | A window you opened keeping a handle on yours |
+| `Cross-Origin-Resource-Policy` | Other sites loading your assets as if they were theirs |
 
-Four lines of config. Worth checking on every project you ever deploy, and almost never there
+Eight lines of config. Worth checking on every project you ever deploy, and almost never there
 by default.
+
+The CSP is worth reading directive by directive rather than as a blob, because **four of the
+ones that matter most do not inherit from `default-src`**: `base-uri`, `frame-ancestors`,
+`form-action` and `report-uri`. Leaving one out leaves it *unset*, not restricted. A policy that
+looks locked down because `default-src 'self'` is at the front can still let an injected `<base>`
+tag repoint every relative URL on the page. All four are stated explicitly here, and
+[`tests/security.test.ts`](../tests/security.test.ts) fails if one goes missing - a header file
+is exactly the kind of thing that gets rewritten wholesale with two directives quietly dropped.
+
+Headers only count on the wire. After a deploy, check what is actually served:
+
+```bash
+curl -sI https://your-site.netlify.app | grep -i 'content-security\|strict-transport'
+```
 
 ### Accessibility
 
@@ -190,13 +223,19 @@ database behind this, this row stops being free and you need to reopen it.
 | --- | --- | --- |
 | Documentation as you go | Done | `docs/adr/` |
 | Tests in the pipeline | Done | `ci.yml`, gated `deploy.yml` (deploy needs two Actions secrets) |
-| Security, inside-out | Done | `npm audit` in CI, `.env` denied to the model |
-| Security, outside-in | Done | CSP and headers in `netlify.toml` |
+| Security, inside-out | Done | `npm audit` + dependency review in CI, SHA-pinned actions, `--ignore-scripts`, Dependabot, CodeQL, `.env` denied to the model |
+| Security, outside-in | Done | CSP and headers in `netlify.toml`, asserted in `tests/security.test.ts` |
+| Content treated as untrusted | Done | URL scheme allowlist in `src/content/schema.ts` |
 | Accessibility | Done | `tests/a11y.test.tsx` |
 | Version pinning | Done | `package-lock.json`, `.nvmrc` |
 | Monitoring and alerting | **Not here** | Netlify Analytics, Sentry, an uptime check |
 | Auth and secrets management | **Not here** | No auth by design; rotate your token |
 | Capacity and performance | **Not here** | Static on a CDN; revisit when you add a backend |
 
-Three of nine are open. That is an honest score for 90 minutes of work, and an honest score is
+Three of ten are open. That is an honest score for 90 minutes of work, and an honest score is
 worth more than a tidy one.
+
+The security rows got their own pass afterwards - the prompt that drove it is in
+[`.claude/commands/security-audit.md`](../.claude/commands/security-audit.md), and what it found
+and what was deliberately left alone is in
+[ADR-007](adr/ADR-007-security-posture.md). Run it on your own fork with `/security-audit`.

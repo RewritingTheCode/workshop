@@ -105,6 +105,18 @@ NETLIFY_AUTH_TOKEN=paste_your_token_here
 No quotes around the token, no trailing space. `.env` is already in `.gitignore`, so it will
 never be committed - check with `git status` if you want to be sure.
 
+Then lock the file down so it is only readable by you:
+
+```bash
+chmod 600 .env
+```
+
+A container or a shared dev box hands new files out as world-readable by default, and a
+long-lived deploy token sitting in a file every account on the machine can read is worth thirty
+seconds to fix. The tooling in this repo cannot do this one for you - it is barred from touching
+`.env` at all, which is the property worth keeping. See
+[ADR-007](adr/ADR-007-security-posture.md).
+
 After your first deploy, run `npx netlify-cli status` and add the site id as a second line:
 
 ```bash

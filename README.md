@@ -18,5 +18,6 @@ enforced by `src/content/schema.ts`, and `npm test` tells you if you get it wron
 
 New here, start with [`docs/SETUP.md`](docs/SETUP.md). Doing it on your own,
 [`docs/WALKTHROUGH.md`](docs/WALKTHROUGH.md). Why it is built this way, [`docs/adr/`](docs/adr/).
+How it is hardened, and how to run the audit yourself, [`SECURITY.md`](SECURITY.md).
 
 Node 20.19+ or 22.12+. MIT licensed - see [LICENSE](LICENSE).
