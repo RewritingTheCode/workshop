@@ -158,6 +158,27 @@ first ever CI run is in this repo.
   `'unsafe-inline'`; or when React's URL handling changes, which the schema now makes a
   non-event.
 
+## Verified on the wire
+
+A header in a config file that never reaches the response is worth nothing, so all eight were
+checked against the live deploy rather than against `netlify.toml`. All eight arrive, on the
+root and on asset paths, and the page still renders correctly at 320px with no console
+violation - which is the check that matters for `style-src`, since getting that directive wrong
+silently removes the gradients rather than breaking anything loudly.
+
+One thing came back different from what we sent, and it is worth knowing about:
+
+    sent:   max-age=31536000; includeSubDomains
+    served: max-age=31536000; includeSubDomains; preload
+
+Netlify appends `preload`. On a `netlify.app` subdomain that is harmless - the apex is already
+on the browsers' preload list and the setting is not ours to make either way. On a **custom
+domain it is a commitment somebody should make deliberately**: preload plus `includeSubDomains`
+tells browsers to refuse plain HTTP to that domain and every subdomain of it, shipped in the
+browser binary, and removal takes months. Anyone pointing a real domain at this should decide
+about it on purpose rather than discover it. That is the reason to `curl -sI` a deploy at all:
+the platform is a participant in your header policy, not a pipe.
+
 ## Not fixed here
 
 Two controls live in GitHub's repository settings rather than in a file, so no commit can turn
