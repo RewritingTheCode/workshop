@@ -58,17 +58,22 @@ jobs:
       url: ${{ steps.netlify.outputs.url }}
 
     steps:
+      # Pinned to a SHA for the same reason as in ci.yml, and it matters more
+      # here: this is the job that holds the deploy token.
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
 
+      # No dependency lifecycle script runs in the job that has the token.
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build
         run: npm run build
@@ -79,7 +84,11 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          npx --yes netlify-cli@latest deploy --dir=dist --prod --json > deploy.json
+          # Pinned, not @latest. This is the one step in the repo that holds a
+          # credential, and `@latest` means "whatever the registry serves at
+          # this exact second" executes with the deploy token in its
+          # environment. Dependabot keeps the pin moving. See ADR-007.
+          npx --yes netlify-cli@^27 deploy --dir=dist --prod --json > deploy.json
           url="$(node -p "require('./deploy.json').deploy_ssl_url || require('./deploy.json').url")"
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "Deployed to $url" >> "$GITHUB_STEP_SUMMARY"

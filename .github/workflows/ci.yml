@@ -22,17 +22,32 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      # Third-party actions are pinned to an immutable commit SHA, not a tag.
+      # A tag is a moving pointer the action's owner can repoint at any time,
+      # and a hijacked maintainer account is the normal way this goes wrong.
+      # Dependabot updates the SHA and the version comment together, so this
+      # stays current rather than merely old. See ADR-007.
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Nothing here pushes. Without this, checkout leaves a credential
+          # behind for every later step - including anything a dependency runs.
+          persist-credentials: false
 
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: .nvmrc
           cache: npm
 
+      # `--ignore-scripts` blocks the postinstall-runs-arbitrary-code vector,
+      # which is how most npm supply chain attacks actually land. Verified safe
+      # for this tree: the only dependency declaring an install script is
+      # `fsevents` (macOS-only, optional), and the build is byte-identical
+      # without it. Node's version is pinned by setup-node above, so skipping
+      # our own `preinstall` guard costs nothing here.
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Lint
         run: npm run lint
@@ -47,5 +62,18 @@ jobs:
         run: npm run build
 
       # Security, inside-out: fail the build on a known-vulnerable dependency.
+      # `moderate`, not `high`: this is a static site with a tiny dependency
+      # tree, so the noise a lower threshold usually brings does not arrive,
+      # and a moderate advisory in a build tool is still a build tool we run
+      # with a deploy token nearby.
       - name: Audit dependencies
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=moderate
+
+      # `npm audit` only sees what is already merged. This one reads the diff
+      # and blocks the PR that *introduces* a vulnerable or badly-licensed
+      # package, which is the cheaper place to catch it.
+      - name: Review dependency changes
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate

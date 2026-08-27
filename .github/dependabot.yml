@@ -1,0 +1,21 @@
+# Without this, a template repo ships with pins that are correct on the day it
+# is handed over and stale forever after. The whole point of pinning the deploy
+# path (ADR-007) is that something keeps the pins moving.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One PR a week for the routine bumps, so a fork's owner is not looking at
+      # eleven of them and ignoring all eleven.
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
