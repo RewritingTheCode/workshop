@@ -10,9 +10,57 @@
  */
 import { z } from 'zod';
 
+/**
+ * The schemes a URL is allowed to use, by where it ends up in the page.
+ *
+ * `z.url()` accepts anything a URL parser accepts - `javascript:alert(1)`,
+ * `data:text/html;base64,...`, `vbscript:` and `file:///etc/passwd` all pass
+ * it - and every string below is rendered straight into an `href` or a `src`.
+ *
+ * This is a template. The person filling in `profile.ts` is often pasting from
+ * a resume, a chat window or somebody else's page, which makes content
+ * untrusted input even though it lives in a `.ts` file. React 19 happens to
+ * block `javascript:` hrefs, but that covers one scheme, it is not in a test,
+ * and it leaves with the framework. The rule belongs in the contract.
+ *
+ * See docs/adr/ADR-007-security-posture.md.
+ */
+const SCHEME = /^[a-z][a-z0-9+.-]*:/i;
+
+function safeUrl(schemes: readonly string[], hint: string) {
+  const allowed = new Set(schemes);
+
+  return z.string().min(1).refine(
+    (value) => {
+      // `//evil.tld/x` has no scheme of its own - it borrows the page's and
+      // points at somebody else's host. It is not a path on this site.
+      if (value.startsWith('//')) return false;
+
+      const match = SCHEME.exec(value);
+      // No scheme at all: a path on this own site. Nothing to hijack.
+      if (!match) return true;
+
+      const scheme = match[0].slice(0, -1).toLowerCase();
+      if (!allowed.has(scheme)) return false;
+
+      // `data:` is allowed for inline images and nothing else. `data:image/*`
+      // in an `<img>` is inert - browsers refuse to run script inside it -
+      // whereas `data:text/html` is a document, and allowing one media type
+      // through a check named "images" would be an easy thing to miss.
+      if (scheme === 'data') return /^data:image\//i.test(value);
+
+      return true;
+    },
+    { message: hint },
+  );
+}
+
 export const linkSchema = z.object({
   label: z.string().min(1),
-  href: z.url(),
+  href: safeUrl(
+    ['https', 'mailto'],
+    'href must be an https:// link or a mailto: address. Other schemes are rejected - a javascript: or data: URL pasted in here would ship to a public page.',
+  ),
 });
 
 /**
@@ -21,7 +69,11 @@ export const linkSchema = z.object({
  * place to enforce that rather than hoping someone remembers.
  */
 export const imageSchema = z.object({
-  src: z.string().min(1),
+  /** A path in `public/`, an https URL, or an inline `data:` image. */
+  src: safeUrl(
+    ['https', 'data'],
+    'image src must be a path in public/, an https:// URL, or a data: URI',
+  ),
   alt: z.string().min(1),
   /** Photographer and source, when the image is not yours. */
   credit: z.string().optional(),
@@ -71,8 +123,15 @@ export const profileSchema = z.object({
   /** Two or three sentences, first person. */
   intro: z.string().min(1),
   location: z.string().optional(),
-  avatar: z.string().default('/avatar-placeholder.svg'),
-  resumeUrl: z.string().optional(),
+  avatar: safeUrl(
+    ['https', 'data'],
+    'avatar must be a path in public/, an https:// URL, or a data: URI',
+  ).default('/avatar-placeholder.svg'),
+  /** A path in `public/`, or an https link to a resume hosted elsewhere. */
+  resumeUrl: safeUrl(
+    ['https'],
+    'resumeUrl must be a path in public/ or an https:// URL',
+  ).optional(),
   links: z.array(linkSchema).default([]),
   timeline: z.array(timelineEntrySchema).min(1),
 
