@@ -5,10 +5,26 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Security headers. See docs/adr/ADR-007-security-posture.md, and
+# tests/security.test.ts, which fails if any of the directives below go missing.
+#
+# The CSP is written out directive by directive rather than leaning on
+# `default-src`, because four of the ones that matter most - `base-uri`,
+# `frame-ancestors`, `form-action` and `report-uri` - do NOT inherit from it.
+# Leaving them out leaves them unset, not restricted.
+#
+# `style-src 'unsafe-inline'` is load-bearing: Hero.tsx and EntryCover.tsx set
+# `style={{...}}`, and Tailwind v4 emits inline custom properties. Removing it
+# removes the gradients. `img-src https:` is deliberately broad so a fork can
+# point at an image hosted anywhere - the trade is written down in the ADR.
 [[headers]]
   for = "/*"
   [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'; upgrade-insecure-requests"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+    Permissions-Policy = "accelerometer=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"

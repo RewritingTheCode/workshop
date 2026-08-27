@@ -1,3 +1,5 @@
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { linkSchema, profileSchema } from '../src/content/schema';
 
@@ -75,6 +77,69 @@ describe('content URLs', () => {
     // The person hitting this is a stranger who forked the template. The error
     // has to point at the field, not just say "invalid".
     expect(result.error.issues[0]?.path).toEqual(['resumeUrl']);
+  });
+});
+
+describe('response headers', () => {
+  const netlifyToml = readFileSync(join(process.cwd(), 'netlify.toml'), 'utf8');
+
+  /*
+   * These four do NOT fall back to `default-src`. Leaving one out leaves it
+   * unset, not restricted, which is the trap this test exists to catch.
+   */
+  it.each(['base-uri', 'frame-ancestors', 'form-action', 'object-src'])(
+    'sets %s explicitly, because it does not inherit from default-src',
+    (directive) => {
+      expect(netlifyToml).toContain(`${directive} 'none'`);
+    },
+  );
+
+  it.each([
+    "default-src 'self'",
+    "script-src 'self'",
+    "connect-src 'self'",
+  ])('locks %s to this origin', (directive) => {
+    expect(netlifyToml).toContain(directive);
+  });
+
+  it.each([
+    'Strict-Transport-Security',
+    'X-Content-Type-Options',
+    'X-Frame-Options',
+    'Referrer-Policy',
+    'Permissions-Policy',
+    'Cross-Origin-Opener-Policy',
+    'Cross-Origin-Resource-Policy',
+  ])('sends %s', (header) => {
+    expect(netlifyToml).toContain(header);
+  });
+});
+
+/**
+ * An SVG is a document, not just a picture. Served from `public/` it lands on
+ * this site's own origin, so a `<script>` inside one runs as us the moment
+ * anybody navigates straight to the file - and `img-src` does not stop that,
+ * because it is a navigation and not an image load.
+ *
+ * The reason this is a test and not a code review note: `public/` is exactly
+ * where a forker drops the avatar they exported from somewhere else.
+ */
+describe('assets in public/', () => {
+  const publicDir = join(process.cwd(), 'public');
+  const svgs = readdirSync(publicDir).filter((file) => file.endsWith('.svg'));
+
+  it('has SVGs to check', () => {
+    expect(svgs.length).toBeGreaterThan(0);
+  });
+
+  it.each(svgs)('%s carries no script, handler or remote reference', (file) => {
+    const svg = readFileSync(join(publicDir, file), 'utf8');
+
+    expect(svg, 'contains a <script> element').not.toMatch(/<script/i);
+    expect(svg, 'contains an inline event handler').not.toMatch(/\son\w+\s*=/i);
+    // `xmlns="http://www.w3.org/2000/svg"` is a namespace identifier and is
+    // never fetched. An href that leaves the file is a different thing.
+    expect(svg, 'references a remote resource').not.toMatch(/(?:xlink:)?href\s*=\s*["']https?:/i);
   });
 });
 
