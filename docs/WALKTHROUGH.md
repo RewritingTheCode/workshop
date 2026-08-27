@@ -93,9 +93,9 @@ Drop your resume in the project root - PDF or plain text is fine - then:
 
 ```
 Read ./my-resume.pdf and rewrite src/content/profile.ts with my real
-information. Follow src/content/schema.ts exactly. Keep the entry shapes and
-the tags. Do not invent anything that is not in the resume - if a field is not
-in there, leave it out. Then run npm test.
+information. Follow src/content/schema.ts exactly. Keep the entry shapes, the
+tags, and the sections array. Do not invent anything that is not in the resume
+- if a field is not in there, leave it out. Then run npm test.
 ```
 
 **The "do not invent anything" clause is not optional.** Without it you will get a
