@@ -36,16 +36,23 @@ will spend ninety seconds on it" is a useful answer. "For everyone" is not.
 ## Step 2. Spec - write the decision down before you build it
 
 An **ADR** - Architecture Decision Record - is a one-page note saying what you decided, what you
-rejected, and what you are accepting as a consequence. There are four in `docs/adr/` already.
+rejected, and what you are accepting as a consequence. There are six in `docs/adr/` already.
 Read [ADR-002](adr/ADR-002-scope.md) before you write yours; it is the shortest useful example.
 
 ```
 Read docs/adr/ADR-TEMPLATE.md and docs/adr/ADR-002-scope.md.
 
-Write docs/adr/ADR-005-<slug>.md for the decision we just talked through.
-Include: context, the decision, the options we rejected and why, and the
-consequences we are accepting. One page. Do not write any code.
+Write an ADR in docs/adr/ for the decision we just talked through. Take the
+next free number - list the directory first - and name the file
+ADR-<number>-<slug>.md. Include: context, the decision, the options we
+rejected and why, and the consequences we are accepting. One page. Do not
+write any code.
 ```
+
+ADR numbers are only ever handed out, never reused or renumbered. A decision that gets
+overturned later gets a *new* ADR that supersedes the old one, and the old file stays exactly
+where it is - because the thing you want in two years is the reasoning that was live at the
+time, not a tidy sequence. "Take the next free number" is the whole rule.
 
 Then **open the file and read the rejected-options section.** That section is the whole point.
 Anyone can write down what they decided. Writing down what you turned away, and why, is what
@@ -57,7 +64,7 @@ If the rejected options are strawmen, the spec is not ready. Push back and regen
 ## Step 3. Build - the ADR is the instruction
 
 ```
-Implement docs/adr/ADR-005-<slug>.md.
+Implement the ADR you just wrote - use its filename.
 
 Follow the existing patterns in src/components/. Content goes through
 src/content/schema.ts - do not add a second source of truth. Keep it responsive
@@ -76,7 +83,7 @@ Two things are doing work in that prompt, and both are worth copying:
 If it goes in the wrong direction, interrupt it. Do not let it finish being wrong:
 
 ```
-Stop. That is not what the ADR says. Re-read docs/adr/ADR-005 and do only
+Stop. That is not what the ADR says. Re-read <your ADR filename> and do only
 what is in it.
 ```
 
@@ -109,6 +116,17 @@ image: {
 A screenshot of the thing you built beats any stock photo, which is why nothing here ships with
 one. The schema requires `alt` whenever there is an image, so `npm test` will tell you if you
 forget it.
+
+**The Download resume button needs its own file.** Importing your resume fills in the *text*;
+it does not move the PDF anywhere. Until you deal with it, that button hands out
+`public/resume-placeholder.pdf`, which is a blank page. Copy your real PDF into `public/` and
+point `resumeUrl` at it - or delete the `resumeUrl` line, and the button disappears. Either is
+fine. Offering a recruiter a blank PDF is not.
+
+Note the file you copy in is *not* the one in the project root: `.gitignore` deliberately
+excludes PDFs from the root, because that is where you dropped a resume carrying your phone
+number and home address. `public/` is published, so put a copy there on purpose, knowing it
+is public.
 
 `npm test` is what catches the other failure mode. If the model drops a date or mangles a
 `kind` field, `tests/content.test.ts` fails and names the exact field. That is the entire
@@ -184,6 +202,11 @@ Open the URL. That is your site, on the real internet, at an address you can put
 
 That was one pass. Now pick something small - a skills grid, a "currently learning" callout, a
 print stylesheet - and do all five steps again for it. Context, spec, build, validate, ship.
+
+If you want the smallest possible version first, reorder the page. `profile.sections` in
+`src/content/profile.ts` is the order of the page top to bottom, and the anchor nav follows it:
+swap the two ids and both move together. It is one line, and it is a fair demonstration of what
+the single-content-file rule buys you - [ADR-006](adr/ADR-006-section-order.md) is the write-up.
 
 The third pass is where it stops feeling like ceremony. **That repetition is the entire skill.**
 

@@ -111,4 +111,4 @@ starter is finished on purpose. The lesson is in changing something that works.
   timeline filter mitigates it; a person with fifteen years of history should
   eventually paginate or trim.
 - **We will need to revisit this when:** an attendee's portfolio outgrows one page,
-  which is a good problem and a good excuse to write their own ADR-005.
+  which is a good problem and a good excuse to write their own ADR.

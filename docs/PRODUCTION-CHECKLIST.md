@@ -15,7 +15,7 @@ admission that it is not here.
 
 **Where:** [`docs/adr/`](adr/)
 
-Four Architecture Decision Records, each written before the code it describes, each with a real
+Six Architecture Decision Records, each written before the code it describes, each with a real
 rejected-options section. The rejected options are the valuable part: they are the answer to
 "why didn't you just use X?" from a version of you that still remembered.
 
@@ -35,6 +35,25 @@ a job that will not run.
 
 Locally, `npm run check` runs the same four steps in the same order, so green on your laptop is
 a real prediction about green in CI.
+
+**One honest caveat, because you will notice it.** On a fresh clone the *deploy* job does not
+run at all - it shows up greyed out in the Actions tab. That is not the gate failing. The
+workflow checks whether `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` exist as repository secrets
+and skips the deploy when they do not, so that a clone with no Netlify account attached does not
+show a red X on every push. It writes the reason into the run summary rather than leaving you to
+guess. Until you add them, `npm run deploy` from your machine is how the site ships.
+
+To turn on push-to-deploy, add the two values you already have in `.env` under
+**Settings → Secrets and variables → Actions → New repository secret**, or from a terminal:
+
+```bash
+gh secret set NETLIFY_AUTH_TOKEN
+gh secret set NETLIFY_SITE_ID
+```
+
+Both prompt for the value rather than taking it as an argument, which keeps the token out of
+your shell history. After that, every push to `main` that passes CI deploys itself, and the
+gate stops being a thing you take our word for.
 
 ### Security, inside-out
 
@@ -125,8 +144,13 @@ account recovery flow, no personal data to lose. **Choosing not to build auth is
 decision, and usually a good one.**
 
 Secrets are handled at the minimum viable standard: `.env` is gitignored, `.env.example` is
-committed with names and no values, the token lives in GitHub Actions secrets for CI, and the
-model is denied read access to `.env`.
+committed with names and no values, CI reads the token from GitHub Actions secrets rather than
+from anything in the repo, and the model is denied read access to `.env`.
+
+That last one is worth checking rather than believing. `Read(./.env)` sits in the `deny` block
+of `.claude/settings.json`, and deny rules hold even in `--dangerously-skip-permissions`, which
+is the mode most people run in. Ask Claude Code to print your `.env` and watch it be refused.
+A security control you have personally watched work is worth more than one you were told about.
 
 What a real system would add:
 
@@ -165,7 +189,7 @@ database behind this, this row stops being free and you need to reopen it.
 | Item | Status | Where |
 | --- | --- | --- |
 | Documentation as you go | Done | `docs/adr/` |
-| Tests in the pipeline | Done | `ci.yml`, gated `deploy.yml` |
+| Tests in the pipeline | Done | `ci.yml`, gated `deploy.yml` (deploy needs two Actions secrets) |
 | Security, inside-out | Done | `npm audit` in CI, `.env` denied to the model |
 | Security, outside-in | Done | CSP and headers in `netlify.toml` |
 | Accessibility | Done | `tests/a11y.test.tsx` |

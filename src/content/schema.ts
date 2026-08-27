@@ -50,6 +50,20 @@ export const timelineEntrySchema = z.object({
   links: z.array(linkSchema).default([]),
 });
 
+/**
+ * The sections of the page, in the order `profile.sections` may name them.
+ *
+ * This is the single list of sections that exist. The schema validates against
+ * it, `SectionId` is inferred from it, and `src/components/sections.tsx` has to
+ * have an entry for every one - so adding a section here and forgetting to
+ * render it is a type error, not a blank space on the page.
+ *
+ * The hero is not in this list on purpose. It carries the `<h1>` and the `#top`
+ * anchor, and every page needs exactly one of it. See ADR-006.
+ */
+export const SECTION_IDS = ['timeline', 'links'] as const;
+export type SectionId = (typeof SECTION_IDS)[number];
+
 export const profileSchema = z.object({
   name: z.string().min(1),
   /** "Computer science student. I build things for the web." */
@@ -61,6 +75,18 @@ export const profileSchema = z.object({
   resumeUrl: z.string().optional(),
   links: z.array(linkSchema).default([]),
   timeline: z.array(timelineEntrySchema).min(1),
+
+  /**
+   * Section order, top to bottom. Drives the page and the anchor nav from the
+   * same array, so the two cannot disagree. Drop an id to hide that section.
+   */
+  sections: z
+    .array(z.enum(SECTION_IDS))
+    .refine((ids) => new Set(ids).size === ids.length, {
+      message:
+        'sections must not repeat - each id is a DOM id and an anchor target, and duplicates break both',
+    })
+    .default([...SECTION_IDS]),
 });
 
 export type Link = z.infer<typeof linkSchema>;

@@ -49,9 +49,14 @@ const entries: TimelineEntry[] = [
   },
 ];
 
+/**
+ * `queryAllByRole`, not `getAllByRole`: "no entries are visible" is a real state
+ * this component has to handle, and the `get*` family throws on zero matches
+ * rather than returning the empty array that state should produce.
+ */
 function visibleEntryIds(): string[] {
   return screen
-    .getAllByRole('listitem')
+    .queryAllByRole('listitem')
     .filter((node) => node.dataset.kind !== undefined)
     .map((node) => node.id);
 }
@@ -116,6 +121,23 @@ describe('Timeline filter', () => {
       'aria-pressed',
       'false',
     );
+  });
+
+  /*
+   * A resume with no side projects on it is a normal resume, and the filter has
+   * to stay honest when one of its three buttons can only ever return nothing.
+   * See the 2026-08-27 amendment in docs/adr/ADR-003-content-model.md.
+   */
+  it('shows the empty state when a filter matches nothing, not a blank stretch of page', async () => {
+    const user = userEvent.setup();
+    const workOnly = entries.filter((entry) => entry.kind === 'work');
+    render(<Timeline entries={workOnly} />);
+
+    await user.click(screen.getByRole('button', { name: 'Projects' }));
+
+    expect(visibleEntryIds()).toEqual([]);
+    expect(screen.getByText('Nothing here yet.')).toBeInTheDocument();
+    expect(screen.getByText('Showing 0 of 2')).toBeInTheDocument();
   });
 
   it('sorts most recent first, with present-day entries at the top', () => {

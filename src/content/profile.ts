@@ -16,7 +16,7 @@
  *
  * Ordering does not matter. `Timeline` sorts by date, most recent first.
  */
-import type { Profile } from './schema';
+import type { Profile } from './schema.ts';
 
 export const profile: Profile = {
   name: 'Jane Doe',
@@ -25,7 +25,16 @@ export const profile: Profile = {
     "I'm a third-year CS student who likes problems where the hard part is the people, not the algorithm. Most of what I build starts as something a friend complained about. I care a lot about making software that works on a five-year-old phone with two bars of signal.",
   location: 'Boston, MA',
   avatar: '/avatar-placeholder.svg',
+  // Swap this for your own resume: drop the file in `public/` and point at it,
+  // e.g. '/jane-doe-resume.pdf'. Remove the field entirely and the download
+  // button disappears - better than offering a recruiter the placeholder.
   resumeUrl: '/resume-placeholder.pdf',
+
+  // The page, top to bottom, under the hero. Move an id and the section and its
+  // nav link move together; delete one and that section goes away entirely.
+  // ['links', 'timeline'] puts how-to-reach-you above the history.
+  // See docs/adr/ADR-006-section-order.md.
+  sections: ['timeline', 'links'],
 
   links: [
     { label: 'GitHub', href: 'https://github.com/janedoe' },

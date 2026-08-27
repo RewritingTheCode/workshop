@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { profile } from '../src/content/profile';
-import { profileSchema } from '../src/content/schema';
+import { SECTION_IDS, profileSchema } from '../src/content/schema';
 
 /**
  * The contract test.
@@ -26,10 +26,29 @@ describe('profile content', () => {
     expect(result.success).toBe(true);
   });
 
-  it('has at least one timeline entry of each kind', () => {
-    const kinds = new Set(profile.timeline.map((entry) => entry.kind));
-    expect(kinds.has('work')).toBe(true);
-    expect(kinds.has('project')).toBe(true);
+  /*
+   * There is deliberately no test here requiring both a `work` entry and a
+   * `project` entry. Plenty of real resumes are one or the other, and a test
+   * that can only be satisfied by inventing a job is worse than no test at all.
+   * See the 2026-08-27 amendment in docs/adr/ADR-003-content-model.md. The
+   * behaviour that made reachable - filtering to a kind you have none of - is
+   * covered in tests/timeline.test.tsx.
+   */
+
+  it('rejects a sections list that repeats a section, because ids are anchors', () => {
+    const result = profileSchema.safeParse({ ...profile, sections: ['timeline', 'timeline'] });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a section id that nothing knows how to render', () => {
+    const result = profileSchema.safeParse({ ...profile, sections: ['about-me'] });
+    expect(result.success).toBe(false);
+  });
+
+  it('names only sections that exist', () => {
+    for (const id of profile.sections) {
+      expect(SECTION_IDS, `profile.sections names "${id}", which is not a section`).toContain(id);
+    }
   });
 
   it('gives every entry a unique id, because ids are React keys and anchors', () => {

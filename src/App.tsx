@@ -1,29 +1,10 @@
+import { Page } from './components/Page';
 import { profile } from './content/profile';
-import { AnchorNav } from './components/AnchorNav';
-import { Hero } from './components/Hero';
-import { Timeline } from './components/Timeline';
-import { LinksBlock } from './components/LinksBlock';
-import { Footer } from './components/Footer';
 
+/**
+ * Wires the real content into the page shell, and nothing else. The layout
+ * lives in `Page` so it can be tested against a fixture - see ADR-006.
+ */
 export function App() {
-  return (
-    <>
-      <a
-        href="#main"
-        className="focus:bg-brand-600 sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-20 focus:rounded-md focus:px-4 focus:py-2 focus:text-white"
-      >
-        Skip to content
-      </a>
-
-      <AnchorNav />
-
-      <main id="main">
-        <Hero profile={profile} />
-        <Timeline entries={profile.timeline} />
-        <LinksBlock links={profile.links} resumeUrl={profile.resumeUrl} />
-      </main>
-
-      <Footer name={profile.name} />
-    </>
-  );
+  return <Page profile={profile} />;
 }

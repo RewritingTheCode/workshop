@@ -142,3 +142,34 @@ larger one in ADR-001.
 - **We will need to revisit this when:** content grows past what one file can hold
   comfortably, or when someone wants long-form prose per entry, at which point
   Markdown per entry becomes the right answer after all.
+
+---
+
+## Amendment, 2026-08-27: the content tests stop asserting a shape of career
+
+**What changed:** `tests/content.test.ts` no longer requires the timeline to contain at
+least one `work` entry *and* at least one `project` entry.
+
+That assertion was written against the starter content, where both kinds exist because
+we wrote them. It only ever looked correct. The moment an attendee runs the minute-22
+prompt against a resume with no personal projects on it - or a resume that is nothing
+but personal projects, which is a lot of first-year students - the test goes red, and
+it goes red for having done the right thing.
+
+The failure is worse than an ordinary red test because there is no honest way out of
+it. `CLAUDE.md` says never weaken a failing test to make it pass, and the decision above
+says never invent content. Together those leave an attendee with one option: put a job
+on a public page about themselves that they did not have. A test that can only be
+satisfied by fabricating something is not a safety net, it is a trap, and it was aimed
+squarely at the least confident person in the room.
+
+**What replaces it.** Nothing, in `content.test.ts` - "this person has had both a job
+and a side project" is a fact about a life, not a property of the content model, and the
+schema already guarantees every entry carries a valid `kind`. The behaviour that
+actually became reachable is covered where behaviour belongs: `tests/timeline.test.tsx`
+now asserts that filtering to a kind with no entries renders the empty state rather than
+a blank stretch of page.
+
+We are keeping the filter's three buttons even when one of them can only ever return
+nothing. Hiding a control based on the data behind it is a rule that has to be explained,
+tested and maintained, and "Nothing here yet." already tells the truth in one line.

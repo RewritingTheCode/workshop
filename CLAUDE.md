@@ -19,6 +19,15 @@ All personal content lives in `src/content/profile.ts` and must satisfy
 `src/content/schema.ts`. Never add a second source of truth for content. Never hardcode a name,
 a job title, or a date into a component.
 
+That includes `index.html`. Its `<title>` and meta description are filled in from `profile.ts`
+at build time by the plugin in `vite.config.ts` - see `src/content/metadata.ts`. Leave the
+`__PAGE_TITLE__` and `__PAGE_DESCRIPTION__` tokens alone.
+
+Page section order is content too: `profile.sections` is the order of the page and of the
+anchor nav. Adding a section means adding its id to `SECTION_IDS` in the schema and an entry
+in `src/components/sections.tsx` - never a hand-placed component in `Page.tsx`. See
+`docs/adr/ADR-006-section-order.md`.
+
 **Never invent content.** If information is not in the source the user gave you, leave the field
 out. This is a public portfolio - a fabricated job or project is a serious problem, not a
 formatting detail.
@@ -37,6 +46,11 @@ formatting detail.
 
 Every behavior change needs a test that would fail without it. `npm test` must be green before any
 deploy. Do not delete or weaken a failing test to make it pass - fix the code.
+
+The one exception is a test that asserts something about the *person* rather than the code -
+"this resume has at least one side project on it" is not a property this repo gets to require.
+If a test can only be made green by inventing content, the test is wrong. Say so, and write
+down why in the ADR it belongs to.
 
 ## Never
 
