@@ -19,7 +19,7 @@
     "deploy": "dotenv -e .env -- npx --yes netlify-cli@^27 deploy --build --prod"
   },
   "dependencies": {
-    "lucide-react": "^1.34.0",
+    "lucide-react": "^1.38.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "zod": "^4.4.3"
