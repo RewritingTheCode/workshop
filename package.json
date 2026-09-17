@@ -21,7 +21,7 @@
   "dependencies": {
     "lucide-react": "^1.34.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react-dom": "^19.3.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "@testing-library/user-event": "^14.6.6",
     "@types/jest-axe": "^3.5.9",
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.5",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.0",
     "dotenv-cli": "^11.0.0",
     "eslint": "^10.9.1",
